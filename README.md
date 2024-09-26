@@ -28,8 +28,8 @@ Este projeto é uma aplicação de web scraping que coleta dados de notebooks Le
 ### 1. Clonar o Repositório
 
 ```bash
-git clone https://github.com/seuusuario/seurepositorio.git
-cd seurepositorio
+git clone https://github.com/marcinhojazz/crawler-test
+cd crawler-test
 ```
 
 ### 2. Criar e Ativar o Ambiente Virtual
