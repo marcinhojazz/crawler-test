@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste Crawler Jr. - Lenovo Notebooks</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 18px;
+            text-align: left;
+        }
+        table th, table td {
+            padding: 12px;
+            border: 1px solid #ddd;
+        }
+        table th {
+            background-color: #2980b9;
+        }
+        #loading {
+            display: none;
+            font-size: 16px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Lista de Notebooks Lenovo</h1>
+    <div style="text-align: center;">
+        <button id="loadDataBtn">Carregar Dados</button>
+        <button id="saveDataBtn" disabled>Salvar em JSON</button>
+    </div>
+    <p id="loading">Carregando dados...</p>
+    
+    <table id="productsTable">
+        <thead>
+            <tr>
+                <th>Título</th>
+                <th>Preço</th>
+                <th>Descrição</th>
+                <th>Avaliações</th>
+                <th>Classificação</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Os dados são carregados aqui -->
+        </tbody>
+    </table>
+
+    <script>
+        let loadedData = [];
+
+        document.getElementById('loadDataBtn').addEventListener('click', function() {
+            const tableBody = document.querySelector('#productsTable tbody');
+            const loadingText = document.getElementById('loading');
+            const saveDataBtn = document.getElementById('saveDataBtn');
+
+            // Limpa a tabela
+            tableBody.innerHTML = '';
+            loadingText.style.display = 'block';
+            saveDataBtn.disabled = true;
+
+            // Requisição API
+            fetch('/lenovo-notebooks')
+                .then(response => response.json())
+                .then(data => {
+                    loadedData = data;
+                    loadingText.style.display = 'none';
+                    saveDataBtn.disabled = false;
+
+                    data.forEach(product => {
+                        const row = document.createElement('tr');
+                        row.classList.add('loaded');
+                        row.innerHTML = `
+                            <td><a href="${product.product_link}" target="_blank">${product.title}</a></td>
+                            <td>$${product.price}</td>
+                            <td>${product.description}</td>
+                            <td>${product.reviews}</td>
+                            <td>${product.rating || 'N/A'}</td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+                })
+                .catch(error => {
+                    loadingText.innerText = 'Erro ao carregar dados!';
+                    console.error('Erro:', error);
+                });
+        });
+
+        document.getElementById('saveDataBtn').addEventListener('click', function() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(loadedData));
+            const downloadAnchorNode = document.createElement('a');
+            downloadAnchorNode.setAttribute("href", dataStr);
+            downloadAnchorNode.setAttribute("download", "lenovo_notebooks.json");
+            document.body.appendChild(downloadAnchorNode);
+            downloadAnchorNode.click();
+            downloadAnchorNode.remove();
+        });
+    </script>
+
+</body>
+</html>
